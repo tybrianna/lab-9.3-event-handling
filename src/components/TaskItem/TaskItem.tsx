@@ -1,21 +1,17 @@
 import React from "react";
 
-type TaskStatus = "pending" | "in-progress" | "completed";
-
-type TaskPriority = "low" | "medium" | "high";
-
 interface Task {
   id: string;
   title: string;
   description: string;
-  status: TaskStatus;
-  priority: TaskPriority;
+  status: "pending" | "in-progress" | "completed";
+  priority: "low" | "medium" | "high";
   dueDate: string;
 }
 
 interface TaskItemProps {
   task: Task;
-  onStatusChange: (id: string, status: TaskStatus) => void;
+  onStatusChange: (id: string, status: Task["status"]) => void;
   onDelete: (id: string) => void;
 }
 
@@ -30,32 +26,36 @@ const TaskItem: React.FC<TaskItemProps> = ({
     status !== "completed" && new Date(dueDate) < new Date();
 
   return (
-    <div className={`task-item ${status}`}>
-      <h3>
-        {title} {priority === "high" && <span>🔥</span>}
-      </h3>
+    <div className={`task-item ${status} ${priority}`}>
+      <div className="task-header">
+        <h3>{title}</h3>
+        <span className={`badge ${priority}`}>{priority}</span>
+      </div>
 
       <p>{description}</p>
 
-      <p>Status: {status}</p>
-      <p>Priority: {priority}</p>
-      <p>Due: {dueDate}</p>
+      <div className="task-meta">
+        <span>Status: {status}</span>
+        <span>Due: {dueDate}</span>
+      </div>
 
       {/* Conditional Rendering */}
-      {isOverdue && <p style={{ color: "red" }}>⚠️ Overdue</p>}
+      {isOverdue && <p className="overdue">⚠ Overdue</p>}
 
-      <select
-        value={status}
-        onChange={(e) =>
-          onStatusChange(id, e.target.value as typeof status)
-        }
-      >
-        <option value="pending">Pending</option>
-        <option value="in-progress">In Progress</option>
-        <option value="completed">Completed</option>
-      </select>
+      <div className="task-actions">
+        <select
+          value={status}
+          onChange={(e) =>
+            onStatusChange(id, e.target.value as typeof status)
+          }
+        >
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+        </select>
 
-      <button onClick={() => onDelete(id)}>Delete</button>
+        <button onClick={() => onDelete(id)}>Delete</button>
+      </div>
     </div>
   );
 };
