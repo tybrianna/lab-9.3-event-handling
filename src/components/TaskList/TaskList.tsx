@@ -1,6 +1,13 @@
 import React from "react";
-import { TaskListProps, Task } from "../types";
-import TaskItem from "../TaskItem";
+import TaskItem from "../TaskItem/TaskItem";
+
+type Task = React.ComponentProps<typeof TaskItem>["task"];
+
+interface TaskListProps {
+  tasks: Task[];
+  onStatusChange: (id: string) => void;
+  onDelete: (id: string) => void;
+}
 
 const TaskList: React.FC<TaskListProps> = ({
   tasks,
@@ -8,14 +15,14 @@ const TaskList: React.FC<TaskListProps> = ({
   onDelete,
 }) => {
   if (!tasks.length) {
-    return <p>No tasks available.</p>;
+    return <p className="empty">No tasks match your filters.</p>;
   }
 
   return (
-    <div>
+    <div className="task-list">
       {tasks.map((task: Task) => (
         <TaskItem
-          key={task.id} // ✅ unique key
+          key={task.id} // ✅ proper key
           task={task}
           onStatusChange={onStatusChange}
           onDelete={onDelete}
